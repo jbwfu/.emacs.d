@@ -90,6 +90,7 @@
 (require 'init-temp)
 (require 'init-org)
 (require 'init-eglot)
+(require ' init-custom))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

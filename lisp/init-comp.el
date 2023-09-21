@@ -16,7 +16,7 @@
   :config
   (setq vertico-count 10)
   (setq vertico-cycle t)
-  
+
   ;; Load extensions
   (require 'vertico-directory)
 
@@ -26,10 +26,10 @@
   ;; Do not render italic fonts
   (set-face-attribute 'vertico-group-title nil :slant 'normal)
   :bind
-  ((:map vertico-map
+  (:map vertico-map
          ("<tab>" . vertico-insert)
          ("<return>" . vertico-directory-enter)
-         ("<backspace>" . vertico-directory-delete-char))))
+         ("<backspace>" . vertico-directory-delete-char)))
 
 (use-package consult
   :ensure t
