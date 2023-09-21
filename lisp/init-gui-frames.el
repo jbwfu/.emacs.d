@@ -88,10 +88,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Default startup message
-(defun display-startup-echo-area-message ()
-  (let
-      ((text "Funding for this program was made possible by viewers like you."))
-    (message "􀪾 %s" text)))
+;; (defun display-startup-echo-area-message ()
+;;  (let
+;;      ((text "Funding for this program was made possible by viewers like you."))
+;;    (message "􀪾 %s" text)))
+
+(defun startup-echo-area-message ()
+  (if (daemonp)
+      "Starting Emacs daemon."
+    (let
+        ((text "Funding for this program was made possible by viewers like you."))
+      (message "􀪾 %s" text))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -108,3 +115,4 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; init-gui-frames.el ends here
+

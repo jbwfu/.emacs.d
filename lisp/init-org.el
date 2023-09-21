@@ -11,7 +11,7 @@
 (setq org-fast-tag-selection-single-key 'expert)
 (setq org-export-kill-product-buffer-when-displayed t)
 (setq org-fontify-whole-heading-line t)
-(setq org-directory "/Users/ilyaw39/nexus/nexus-notes/")
+(setq org-directory "~/org-files/")
 (setq org-startup-with-inline-images t)
 (setq org-startup-with-latex-preview t)
 

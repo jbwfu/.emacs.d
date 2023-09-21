@@ -11,8 +11,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; macOS specified key mapping
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'super)
+;; (setq mac-option-modifier 'meta)
+;; (setq mac-command-modifier 'super)
 
 (bind-keys
  ([(super a)] . mark-whole-buffer)
@@ -32,13 +32,15 @@
            ("s-2" . split-window-below)
            ("s-3" . split-window-right)
            ("s-<backspace>" . kill-whole-line)
-           ("<s-right>" . switch-to-next-buffer)
-           ("<s-left>" . switch-to-prev-buffer))
+           ("s-<right>" . switch-to-next-buffer)
+           ("s-<left>" . switch-to-prev-buffer))
 
 (bind-keys :map emacs-lisp-mode-map
            ("C-c C-c". eval-buffer))
 
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -147,7 +149,7 @@
   (find-file "~/.emacs.d/lisp/"))
 
 (bind-keys :map global-map
-           ("C-x k" . delete-current-file)
+           ; C-x k" . delete-current-file)
            ("<f12>" . open-emacs-config-dir))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
