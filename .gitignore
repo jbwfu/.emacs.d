@@ -10,7 +10,8 @@ bookmarks
 /eln-cache/
 /org-persist/
 custom.el
-/eshell/
+/eshell/history
+/eshell/lastdir
 /auto-save-list/
 /elpkg-30.0/
 /request/

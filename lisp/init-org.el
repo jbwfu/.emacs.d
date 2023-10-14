@@ -7,6 +7,9 @@
 ;; Code:
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; output_org-config
+;; org-value
 (setq org-export-coding-system 'utf-8)
 (setq org-fast-tag-selection-single-key 'expert)
 (setq org-export-kill-product-buffer-when-displayed t)
@@ -15,11 +18,16 @@
 (setq org-startup-with-inline-images t)
 (setq org-startup-with-latex-preview t)
 
+;; org-key/map
 (bind-keys :map org-mode-map
            ("C-c l" . org-store-link))
+(global-set-key (kbd "C-c a") 'org-agenda)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
+;; Quick jump to link
+(bind-keys :map org-mode-map
+           ("s-<return>" . org-open-at-point))
+
+;; package_org-modern
 ;; Modern Org Mode
 (use-package org-modern
   :ensure t
@@ -36,6 +44,10 @@
   (setq org-modern-timestamp nil)
   :config (global-org-modern-mode 1))
 
+(setq org-ellipsis " 􀍠")
+(setq org-hide-emphasis-markers t)
+
+;; prettify-symbols-alist
 (defun my-iconify-org-buffer ()
   (progn
     (push '(":PROPERTIES:" . ?􀈭) prettify-symbols-alist)
@@ -50,11 +62,7 @@
   (prettify-symbols-mode 1))
 (add-hook 'org-mode-hook #'my-iconify-org-buffer)
 
-(setq org-ellipsis " 􀍠")
-(setq org-hide-emphasis-markers t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
+;; org-mode-hook
 ;; Draw fringes in Org mode
 (defun my-toggle-internal-fringes ()
   (setq left-margin-width 10)
@@ -66,9 +74,7 @@
 (setq org-hide-drawer-startup t)
 (add-hook 'org-mode-hook #'org-hide-drawer-all)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Org fragments
+;; org-image
 (setq org-image-actual-width '(420))
 
 (defun my-preview-org-fragments ()
@@ -79,9 +85,7 @@
 (bind-keys :map org-mode-map
            ("C-x p" . my-preview-org-fragments))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Org links
+;; org-link
 (setq org-return-follows-link t)
 (setq org-link-elisp-confirm-function nil)
 
@@ -92,12 +96,7 @@
 (bind-keys :map org-mode-map
            ("s-<return>" . org-open-at-point))
 
-;; Using shift-<arrow-keys> to select text
-(setq org-support-shift-select t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Org mode text edition
+;; package_org-roam
 (use-package org-roam
   :ensure t
   :after (org)
@@ -138,7 +137,7 @@
                                   (goto-char (point-max))))
   (after-init . org-roam-dailies-goto-today))
 
-;; Org-roam meets Consult
+;; package_consult-org-roam
 (use-package consult-org-roam
   :ensure t
   :after (org-roam)
@@ -149,9 +148,7 @@
         (("s-f" . consult-org-roam-file-find)
          ("s-b" . consult-org-roam-backlinks))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Org LaTeX customizations
+;; org-latex-customizations
 (setq org-latex-preview-default-process 'dvisvgm)
 (setq org-latex-packages-alist
       '(("T1" "fontenc" t)
@@ -185,20 +182,246 @@
 (setq org-pretty-entities t)
 (setq org-pretty-entities-include-sub-superscripts nil)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; Load languages
-;;
-;; Org source code blocks
+;; org-babel-language:ditaa
+(setq org-ditaa-jar-path "~/.emacs.d/plugins/ditaa/ditaa-0.11.0-standalone.jar")
+(setq org-plantuml-jar-path "~/.emacs.d/plugins/ditaa/plantuml.jar")
+
+(defun bh/display-inline-images ()
+  (condition-case nil
+      (org-display-inline-images)
+    (error nil)))
+
+(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
+
+(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
+
+;; org-babel
 (setq-default org-confirm-babel-evaluate nil)
 (setq-default org-src-preserve-indentation t)
 (setq-default org-src-fontify-natively t)
 (setq-default org-src-tab-acts-natively t)
 (setq-default org-edit-src-content-indentation 0)
 
-(org-babel-do-load-languages 'org-babel-load-languages
-                             '((emacs-lisp . t)
-                               (python . t)))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (ditaa . t)
+   (org . t)
+   (plantuml . t)
+   (python . t)
+   (shell . t)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_org-todo-config
+;; org-tag-value
+; Allow setting single tags without the menu
+(setq org-fast-tag-selection-single-key (quote expert))
+
+; For tag searches ignore tasks with scheduled and deadline dates
+(setq org-agenda-tags-todo-honor-ignore-options t)
+
+;; org-tag-alist
+; Tags with fast selection keys
+(setq org-tag-alist  '((:startgroup)
+                       ("REFILE" . ?r)
+                       ("NOTE" . ?n)
+                       (:endgroup)
+                       ("orgmode" . ?o)
+                       ("elisp" . ?e)
+                       ("docker" . ?d)
+                       ("tutorial" . ?t)
+                       ("fuctions" . ?f)
+                       ("custom" . ?c)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_org-todo-config
+;; org-tag-value
+; Allow setting single tags without the menu
+(setq org-fast-tag-selection-single-key (quote expert))
+
+; For tag searches ignore tasks with scheduled and deadline dates
+(setq org-agenda-tags-todo-honor-ignore-options t)
+
+;; org-tag-alist
+; Tags with fast selection keys
+(setq org-tag-alist  '((:startgroup)
+                       ("REFILE" . ?r)
+                       ("NOTE" . ?n)
+                       (:endgroup)
+                       ("orgmode" . ?o)
+                       ("elisp" . ?e)
+                       ("docker" . ?d)
+                       ("tutorial" . ?t)
+                       ("fuctions" . ?f)
+                       ("custom" . ?c)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_org-agenda-config
+;; org-agenda-value
+;; Do not dim blocked tasks
+(setq org-agenda-dim-blocked-tasks nil)
+;; Compact the block agenda view
+(setq org-agenda-compact-blocks t)
+
+;; org-agenda-custom-commands
+(setq org-agenda-custom-commands
+      '(("n" "Agenda and all TODOs"
+         ((agenda #1="")
+          (alltodo #1#)
+          (tags "REFILE"
+                ((org-agenda-overriding-header "Tasks to Refile")
+                 (org-tags-match-list-sublevels nil)))))
+        ("h" "test"
+         ((agenda "" nil)
+          (tags "elisp"
+                ((org-agenda-overriding-header "Tasks to elisp")
+                 (org-tags-match-list-sublevels nil)))
+          (tags "BUG"
+                ((org-agenda-overriding-header "Tasks to bug")
+                 (org-tags-match-list-sublevels nil)))))
+        ("o" . "orgmode + type tag searches") ; describe prefix "h"
+        ("oc" tags "+orgmode+config")
+        ("oe" tags "+orgmode+elisp")
+        ("ot" tags "+orgmode+tutoraila")))
+
+;; org-agenda-auto-exclude-function
+(defun bh/org-auto-exclude-function (tag)
+  "Automatic task exclusion in the agenda with / RET"
+  (and (cond
+        ((string= tag "docker")
+         t)
+        ((string= tag "bug")
+         t))
+       (concat "-" tag)))
+
+(setq org-agenda-auto-exclude-function 'bh/org-auto-exclude-function)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_init-org-capture
+;; org-capture-value
+(setq org-default-notes-file "~/org-files/capture/refile.org")
+(global-set-key (kbd "C-c c") 'org-capture)
+
+;; org-capture-templates
+(setq org-capture-templates
+      (quote (("t" "todo" entry (file "~/org-files/capture/refile.org")
+               "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+              ("r" "respond" entry (file "~/org-files/capture/refile.org")
+               "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+              ("n" "note" entry (file "~/org-files/capture/refile.org")
+               "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+              ("j" "Journal" entry (file+datetree "~/org-files/capture/diary.org")
+               "* %?\n%U\n" :clock-in t :clock-resume t)
+              ("w" "org-protocol" entry (file "~/org-files/capture/refile.org")
+               "* TODO Review %c\n%U\n" :immediate-finish t)
+              ("m" "Meeting" entry (file "~/org-files/capture/refile.org")
+               "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+              ("p" "Phone call" entry (file "~/org-files/capture/refile.org")
+               "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+              ("h" "Habit" entry (file "~/org-files/capture/refile.org")
+               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+
+
+;; org-clock-out-hook
+;; Remove empty LOGBOOK drawers on clock out
+(defun bh/remove-empty-drawer-on-clock-out ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line 0)
+    (org-remove-empty-drawer-at "LOGBOOK" (point))))
+
+(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_org-refile-config
+;; org-refile-value
+; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+(setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                 (org-agenda-files :maxlevel . 9))))
+
+; Use full outline paths for refile targets - we file directly with IDO
+(setq org-refile-use-outline-path t)
+
+; Targets complete directly with IDO
+(setq org-outline-path-complete-in-steps t)
+
+; Allow refile to create parent tasks with confirmation
+(setq org-refile-allow-creating-parent-nodes (quote confirm))
+
+; Use the current window when visiting files and buffers with ido
+(setq ido-default-file-method 'selected-window)
+(setq ido-default-buffer-method 'selected-window)
+; Use the current window for indirect buffer display
+(setq org-indirect-buffer-display 'current-window)
+
+;; org-refile-target-verify-function
+;; Refile settings
+; Exclude DONE state tasks from refile targets
+(defun bh/verify-refile-target ()
+  "Exclude todo keywords with a done state from refile targets"
+  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+
+(setq org-refile-target-verify-function 'bh/verify-refile-target)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_org-clock-config
+;; org-clock-value
+;;
+;; Resume clocking task when emacs is restarted
+(org-clock-persistence-insinuate)
+;;
+;; Show lot of clocking history so it's easy to pick items off the C-F11 list
+(setq org-clock-history-length 23)
+;; Resume clocking task on clock-in if the clock is open
+(setq org-clock-in-resume t)
+;; Change tasks to NEXT when clocking in
+(setq org-clock-in-switch-to-state 'bh/clock-in-to-next)
+;; Separate drawers for clocking and logs
+(setq org-drawers (quote ("PROPERTIES" "LOGBOOK")))
+;; Save clock data and state changes and notes in the LOGBOOK drawer
+(setq org-clock-into-drawer t)
+;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks with 0:00 duration
+(setq org-clock-out-remove-zero-time-clocks t)
+;; Clock out when moving task to a done state
+(setq org-clock-out-when-done t)
+;; Save the running clock and all clock history when exiting Emacs, load it on startup
+(setq org-clock-persist t)
+;; Do not prompt to resume an active clock
+(setq org-clock-persist-query-resume nil)
+;; Enable auto clock resolution for finding open clocks
+(setq org-clock-auto-clock-resolution (quote when-no-clock-is-running))
+;; Include current clocking task in clock reports
+(setq org-clock-report-include-clocking-task t)
+;; Removes clocked tasks with 0:00 duration
+(setq org-clock-out-remove-zero-time-clocks t)
+
+;; org-agenda-custom-commands
+(setq org-agenda-custom-commands
+      '(("n" "Agenda and all TODOs"
+         ((agenda #1="")
+          (alltodo #1#)
+          (tags "REFILE"
+                ((org-agenda-overriding-header "Tasks to Refile")
+                 (org-tags-match-list-sublevels nil)))))
+        ("h" "test"
+         ((agenda "" nil)
+          (tags "elisp"
+                ((org-agenda-overriding-header "Tasks to elisp")
+                 (org-tags-match-list-sublevels nil)))
+          (tags "BUG"
+                ((org-agenda-overriding-header "Tasks to bug")
+                 (org-tags-match-list-sublevels nil)))))
+        ("o" . "orgmode + type tag searches") ; describe prefix "h"
+        ("oc" tags "+orgmode+config")
+        ("oe" tags "+orgmode+elisp")
+        ("ot" tags "+orgmode+tutoraila")))
+;; org-clock config ends here
 
 (provide 'init-org)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

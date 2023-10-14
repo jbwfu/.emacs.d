@@ -132,9 +132,9 @@
     (delete-file (buffer-file-name))
     (kill-this-buffer)))
 
-(defun kill-current-buffer ()
-  (interactive)
-  (kill-buffer (current-buffer)))
+;(defun kill-current-buffer ()
+;  (interactive)
+;  (kill-buffer (current-buffer)))
 
 (defun indent-current-buffer ()
   (interactive)

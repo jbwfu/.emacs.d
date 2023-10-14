@@ -1,0 +1,10 @@
+alias locate *locate $*
+alias trans2zh trans -brief :zh $*
+alias egrep egrep --colour=auto $*
+alias fgrep fgrep --colour=auto $*
+alias grep grep --colour=auto $*
+alias ll ls -l $*
+alias lh ls -lh $*
+alias la ls -A $*
+alias l ls -CF $*
+alias bubu brew update && brew upgrade

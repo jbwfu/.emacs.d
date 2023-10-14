@@ -25,6 +25,7 @@
 (push '(vertical-scroll-bars) default-frame-alist)
 (push '(ns-transparent-titlebar . t) default-frame-alist)
 (push '(ns-appearance . dark) default-frame-alist)
+(push '(alpha-background . 90) default-frame-alist)
 
 ;; Inhibit resizing frame
 (setq frame-inhibit-implied-resize t)
@@ -32,7 +33,7 @@
 ;; Suppress GUI features
 (setq use-dialog-box nil)
 (setq use-file-dialog nil)
-(setq inhibit-splash-screen t)
+; (setq inhibit-splash-screen t)
 (setq inhibit-startup-echo-area-message t)
 (setq inhibit-startup-screen t)
 (setq inhibit-startup-buffer-menu t)

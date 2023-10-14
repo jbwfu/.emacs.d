@@ -33,7 +33,19 @@
 (bind-keys :map help-mode-map
 	       ("t" . beginner-translate-main))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; for buku
+(use-package ebuku
+  :ensure t
+  :bind
+  (:map ebuku-mode-map
+        (("o" . ebuku-open-url)
+        ("mouse-1" . nil)
+        ("mouse-2" . nil))))
 
+(use-package uuidgen
+  :ensure t)
 
 (provide 'init-custom)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

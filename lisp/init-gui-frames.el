@@ -62,14 +62,24 @@
 ;; Custom font
 ;;
 ;; Main typeface
-(set-face-attribute 'default nil :family "Cobalt" :height 140)
+(defun my-apply-font ()
+  (set-face-attribute 'default nil :family "Pes Mono" :height 140)
 
-;; Font settings
-(set-fontset-font "fontset-default" 'unicode "SF Pro")
-(set-fontset-font "fontset-default" 'han "Noto Serif CJK SC")
+  ;; Font settings
+  (set-fontset-font "fontset-default" 'unicode "SF Pro")
+  (set-fontset-font "fontset-default" 'han "Noto Serif CJK SC")
 
-;; Note this make all italic font style disabled
-(set-face-attribute 'italic nil :slant 'normal)
+  ;; Note this make all italic font style disabled
+  (set-face-attribute 'italic nil :slant 'normal))
+
+(add-hook 'after-make-frame-functions
+          (lambda (frame)
+            (select-frame frame)
+            (if (window-system frame)
+                (my-apply-font))))
+
+(if window-system
+    (my-apply-font))
 
 ;; Add font ligatures support
 (use-package ligature
