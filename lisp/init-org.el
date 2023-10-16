@@ -17,11 +17,14 @@
 (setq org-directory "~/org-files/")
 (setq org-startup-with-inline-images t)
 (setq org-startup-with-latex-preview t)
+(setq org-startup-folded 'content)
+(setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
+(setq org-insert-mode-line-in-empty-file t)
 
 ;; org-key/map
-(bind-keys :map org-mode-map
-           ("C-c l" . org-store-link))
-(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c l") #'org-store-link)
+(global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)
 
 ;; Quick jump to link
 (bind-keys :map org-mode-map
@@ -60,7 +63,7 @@
     (push '("#+ATTR_ORG:" . ?􀌞) prettify-symbols-alist)
     (push '("#+STARTUP: " . ?􀖆) prettify-symbols-alist))
   (prettify-symbols-mode 1))
-(add-hook 'org-mode-hook #'my-iconify-org-buffer)
+;; (add-hook 'org-mode-hook #'my-iconify-org-buffer)
 
 ;; org-mode-hook
 ;; Draw fringes in Org mode
@@ -182,34 +185,39 @@
 (setq org-pretty-entities t)
 (setq org-pretty-entities-include-sub-superscripts nil)
 
-;; org-babel-language:ditaa
-(setq org-ditaa-jar-path "~/.emacs.d/plugins/ditaa/ditaa-0.11.0-standalone.jar")
-(setq org-plantuml-jar-path "~/.emacs.d/plugins/ditaa/plantuml.jar")
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_org-todo-config
+;; org-tag-value
+; Allow setting single tags without the menu
+(setq org-fast-tag-selection-single-key (quote expert))
 
-(defun bh/display-inline-images ()
-  (condition-case nil
-      (org-display-inline-images)
-    (error nil)))
+; For tag searches ignore tasks with scheduled and deadline dates
+(setq org-agenda-tags-todo-honor-ignore-options t)
 
-(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
+;; org-todo-keywords
+(setq org-todo-keywords
+      (quote ((sequence "TODO(t)" "NEXT(n)" "WAITING(w@/!)" "|" "DONE(d)")
+              (sequence "LEARNING(l)" "SUSPEND(s@/!)" "|" "FINISHED" "CANCELLED(c@/!)")
+              (sequence "CONSTRUCTING" "BUG(b@/!)" "|" "FIXED(f@/!)"))))
 
-(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
+;; org-todo-keyword-faces
 
-;; org-babel
-(setq-default org-confirm-babel-evaluate nil)
-(setq-default org-src-preserve-indentation t)
-(setq-default org-src-fontify-natively t)
-(setq-default org-src-tab-acts-natively t)
-(setq-default org-edit-src-content-indentation 0)
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (ditaa . t)
-   (org . t)
-   (plantuml . t)
-   (python . t)
-   (shell . t)))
+;; org-todo-state-tags-triggers
+(setq org-todo-state-tags-triggers
+      (quote (("SUSPEND" ("SUSPEND" . t))
+              ("FINISHED" ("FINISHED" . t))
+              ("BUG" ("FIXED") ("BUG" . t))
+              ("FIXED" ("BUG") ("FIXED" . t))
+              ("LEARNING" ("WAITING") ("CANCELLED") ("LEARNING" . t))
+              ("SUSPEND" ("LEARNING") ("CANCELLED") ("SUSPEND" . t))
+              ("WAITING" ("WAITING" . t))
+              ("CANCELLED" ("LEARNING") ("WAITING") ("CANCELLED" . t))
+              ("TODO" ("LEARNING") ("SUSPEND") ("FINISHED") ("CANCELLED") ("FIXED"))
+              ("NEXT" ("LEARNING") ("SUSPEND") ("FINISHED") ("CANCELLED"))
+              ("DONE" ("LEARNING") ("SUSPEND") ("CANCELLED") ("BUG"))
+              (done ("SUSPEND") ("BUG") ("LEARNING") ("WAITING")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -221,41 +229,29 @@
 ; For tag searches ignore tasks with scheduled and deadline dates
 (setq org-agenda-tags-todo-honor-ignore-options t)
 
-;; org-tag-alist
-; Tags with fast selection keys
-(setq org-tag-alist  '((:startgroup)
-                       ("REFILE" . ?r)
-                       ("NOTE" . ?n)
-                       (:endgroup)
-                       ("orgmode" . ?o)
-                       ("elisp" . ?e)
-                       ("docker" . ?d)
-                       ("tutorial" . ?t)
-                       ("fuctions" . ?f)
-                       ("custom" . ?c)))
+;; org-todo-keywords
+(setq org-todo-keywords
+      (quote ((sequence "TODO(t)" "NEXT(n)" "WAITING(w@/!)" "|" "DONE(d)")
+              (sequence "LEARNING(l)" "SUSPEND(s@/!)" "|" "FINISHED" "CANCELLED(c@/!)")
+              (sequence "CONSTRUCTING" "BUG(b@/!)" "|" "FIXED(f@/!)"))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; output_org-todo-config
-;; org-tag-value
-; Allow setting single tags without the menu
-(setq org-fast-tag-selection-single-key (quote expert))
+;; org-todo-keyword-faces
 
-; For tag searches ignore tasks with scheduled and deadline dates
-(setq org-agenda-tags-todo-honor-ignore-options t)
 
-;; org-tag-alist
-; Tags with fast selection keys
-(setq org-tag-alist  '((:startgroup)
-                       ("REFILE" . ?r)
-                       ("NOTE" . ?n)
-                       (:endgroup)
-                       ("orgmode" . ?o)
-                       ("elisp" . ?e)
-                       ("docker" . ?d)
-                       ("tutorial" . ?t)
-                       ("fuctions" . ?f)
-                       ("custom" . ?c)))
+;; org-todo-state-tags-triggers
+(setq org-todo-state-tags-triggers
+      (quote (("SUSPEND" ("SUSPEND" . t))
+              ("FINISHED" ("FINISHED" . t))
+              ("BUG" ("FIXED") ("BUG" . t))
+              ("FIXED" ("BUG") ("FIXED" . t))
+              ("LEARNING" ("WAITING") ("CANCELLED") ("LEARNING" . t))
+              ("SUSPEND" ("LEARNING") ("CANCELLED") ("SUSPEND" . t))
+              ("WAITING" ("WAITING" . t))
+              ("CANCELLED" ("LEARNING") ("WAITING") ("CANCELLED" . t))
+              ("TODO" ("LEARNING") ("SUSPEND") ("FINISHED") ("CANCELLED") ("FIXED"))
+              ("NEXT" ("LEARNING") ("SUSPEND") ("FINISHED") ("CANCELLED"))
+              ("DONE" ("LEARNING") ("SUSPEND") ("CANCELLED") ("BUG"))
+              (done ("SUSPEND") ("BUG") ("LEARNING") ("WAITING")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -263,8 +259,30 @@
 ;; org-agenda-value
 ;; Do not dim blocked tasks
 (setq org-agenda-dim-blocked-tasks nil)
+
 ;; Compact the block agenda view
 (setq org-agenda-compact-blocks t)
+
+;; Keep tasks with dates on the global todo lists
+(setq org-agenda-todo-ignore-with-date nil)
+
+;; Keep tasks with deadlines on the global todo lists
+(setq org-agenda-todo-ignore-deadlines nil)
+
+;; Keep tasks with scheduled dates on the global todo lists
+(setq org-agenda-todo-ignore-scheduled nil)
+
+;; Keep tasks with timestamps on the global todo lists
+(setq org-agenda-todo-ignore-timestamp nil)
+
+;; Remove completed deadline tasks from the agenda view
+(setq org-agenda-skip-deadline-if-done t)
+
+;; Remove completed scheduled tasks from the agenda view
+(setq org-agenda-skip-scheduled-if-done t)
+
+;; Remove completed items from search results
+(setq org-agenda-skip-timestamp-if-done t)
 
 ;; org-agenda-custom-commands
 (setq org-agenda-custom-commands
@@ -304,7 +322,6 @@
 ;; output_init-org-capture
 ;; org-capture-value
 (setq org-default-notes-file "~/org-files/capture/refile.org")
-(global-set-key (kbd "C-c c") 'org-capture)
 
 ;; org-capture-templates
 (setq org-capture-templates
@@ -421,7 +438,60 @@
         ("oc" tags "+orgmode+config")
         ("oe" tags "+orgmode+elisp")
         ("ot" tags "+orgmode+tutoraila")))
-;; org-clock config ends here
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; output_org-clock-config
+;; org-clock-value
+;;
+;; Resume clocking task when emacs is restarted
+(org-clock-persistence-insinuate)
+;;
+;; Show lot of clocking history so it's easy to pick items off the C-F11 list
+(setq org-clock-history-length 23)
+;; Resume clocking task on clock-in if the clock is open
+(setq org-clock-in-resume t)
+;; Change tasks to NEXT when clocking in
+(setq org-clock-in-switch-to-state 'bh/clock-in-to-next)
+;; Separate drawers for clocking and logs
+(setq org-drawers (quote ("PROPERTIES" "LOGBOOK")))
+;; Save clock data and state changes and notes in the LOGBOOK drawer
+(setq org-clock-into-drawer t)
+;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks with 0:00 duration
+(setq org-clock-out-remove-zero-time-clocks t)
+;; Clock out when moving task to a done state
+(setq org-clock-out-when-done t)
+;; Save the running clock and all clock history when exiting Emacs, load it on startup
+(setq org-clock-persist t)
+;; Do not prompt to resume an active clock
+(setq org-clock-persist-query-resume nil)
+;; Enable auto clock resolution for finding open clocks
+(setq org-clock-auto-clock-resolution (quote when-no-clock-is-running))
+;; Include current clocking task in clock reports
+(setq org-clock-report-include-clocking-task t)
+;; Removes clocked tasks with 0:00 duration
+(setq org-clock-out-remove-zero-time-clocks t)
+
+;; org-agenda-custom-commands
+(setq org-agenda-custom-commands
+      '(("n" "Agenda and all TODOs"
+         ((agenda #1="")
+          (alltodo #1#)
+          (tags "REFILE"
+                ((org-agenda-overriding-header "Tasks to Refile")
+                 (org-tags-match-list-sublevels nil)))))
+        ("h" "test"
+         ((agenda "" nil)
+          (tags "elisp"
+                ((org-agenda-overriding-header "Tasks to elisp")
+                 (org-tags-match-list-sublevels nil)))
+          (tags "BUG"
+                ((org-agenda-overriding-header "Tasks to bug")
+                 (org-tags-match-list-sublevels nil)))))
+        ("o" . "orgmode + type tag searches") ; describe prefix "h"
+        ("oc" tags "+orgmode+config")
+        ("oe" tags "+orgmode+elisp")
+        ("ot" tags "+orgmode+tutoraila")))
 
 (provide 'init-org)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
