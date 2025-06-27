@@ -14,8 +14,35 @@
 ;; macOS specified key mapping
 ;;
 
-(setq mac-option-modifier  'meta)
-(setq mac-command-modifier 'super)
+(defun sthenno/platform-is-wsl ()
+  "Return t if running in WSL, nil otherwise."
+  (when (or (getenv "WSL_DISTRO_NAME")
+            (getenv "WSL_INTEROP")
+            (and (string-match-p "microsoft" operating-system-release)
+                 (eq system-type 'gnu/linux)))
+    t ))
+
+;; Configure a physical key to act as the 'super' modifier across OSes.
+;; For a consistent experience on Windows/WSL or Linux(Optional), it is recommended to
+;; use an external tool to remap your physical keys as follows:
+;;   - Left Alt      ->  Application/Menu
+;;   - Left Windows  ->  Left Alt
+;;   - Right Alt     ->  Left Windows
+(cond
+ ((eq system-type 'darwin)              ; macOS
+  (setq mac-option-modifier 'meta)
+  (setq mac-command-modifier 'super))
+
+ ((sthenno/platform-is-wsl)             ; WSL
+  (global-set-key (kbd "<menu>") nil)
+  (define-key key-translation-map (kbd "<menu>") 'event-apply-super-modifier))
+
+ ((eq system-type 'gnu/linux)           ; Linux
+  (global-set-key (kbd "<XF86MenuKB>") nil)
+  (define-key key-translation-map (kbd "<XF86MenuKB>") 'event-apply-super-modifier))
+
+ ((eq system-type 'windows-nt)          ; Windows
+  (setq w32-apps-modifier 'super)))
 
 ;; macOS-styled keybindings
 (keymap-global-set "s-a" #'mark-whole-buffer)
