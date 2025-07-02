@@ -200,7 +200,10 @@ Activate again to undo this. If the window changes before then, the undo expires
   (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
   ;; `gls' is preferred on macOS
-  (setq insert-directory-program "/opt/homebrew/bin/gls")
+  (if (eq system-type 'darwin)
+      (let ((gls-path "/opt/homebrew/bin/gls"))
+        (if (file-executable-p gls-path)
+            (setq insert-directory-program gls-path))))
 
   :config (define-key input-decode-map [?\C-m] [C-m])) ; Default is RET
 
