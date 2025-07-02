@@ -54,6 +54,7 @@
 
 ;; Prevent automatic frame resizing for better performance
 (setq frame-inhibit-implied-resize t)
+;; (setq frame-inhibit-implied-resize 'force)
 
 
 ;; Reduce rendering/line scan work for Emacs by not rendering cursors or regions in
