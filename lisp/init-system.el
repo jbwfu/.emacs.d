@@ -22,6 +22,16 @@
                  (eq system-type 'gnu/linux)))
     t ))
 
+;; Define a customizable variable to store the desired Linux super key event names
+(defcustom sthenno/linux-super-key-event-names '("<menu>" "<XF86MenuKB>" "<MenuKB>")
+  "List of key event name strings to be mapped to the 'super' modifier on GNU/Linux.
+  Each string in the list should correspond to a key event name that Emacs
+  recognizes when the physical key intended for 'super' is pressed.
+  Use `C-h k` followed by pressing the key to find its exact Emacs name.
+  Set this variable to an empty list '() to disable the remapping on Linux."
+  :type '(repeat string)
+  :group 'Keyboard)
+
 ;; Configure a physical key to act as the 'super' modifier across OSes.
 ;; For a consistent experience on Windows/WSL or Linux(Optional), it is recommended to
 ;; use an external tool to remap your physical keys as follows:
@@ -29,19 +39,19 @@
 ;;   - Left Windows  ->  Left Alt
 ;;   - Right Alt     ->  Left Windows
 (cond
- ((eq system-type 'darwin)              ; macOS
+ ((eq system-type 'darwin)
   (setq mac-option-modifier 'meta)
   (setq mac-command-modifier 'super))
-
- ((sthenno/platform-is-wsl)             ; WSL
+ ((sthenno/platform-is-wsl)
   (global-set-key (kbd "<menu>") nil)
   (define-key key-translation-map (kbd "<menu>") 'event-apply-super-modifier))
-
- ((eq system-type 'gnu/linux)           ; Linux
-  (global-set-key (kbd "<XF86MenuKB>") nil)
-  (define-key key-translation-map (kbd "<XF86MenuKB>") 'event-apply-super-modifier))
-
- ((eq system-type 'windows-nt)          ; Windows
+ ((eq system-type 'gnu/linux)
+  (dolist (key-name-string sthenno/linux-super-key-event-names)
+    (when (stringp key-name-string)
+      (when-let* ((key-sequence (kbd key-name-string)))
+        (global-set-key key-sequence nil)
+        (define-key key-translation-map key-sequence 'event-apply-super-modifier)))))
+ ((eq system-type 'windows-nt)
   (setq w32-apps-modifier 'super)))
 
 ;; macOS-styled keybindings
