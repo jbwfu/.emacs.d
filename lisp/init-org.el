@@ -204,9 +204,6 @@
         denote-kill-buffers t)
   (setq denote-open-link-function #'find-file)
 
-  ;; Do not include date, tags and ids in note files
-  (setopt denote-org-front-matter "#+title: %1$s\n\n")
-
   ;; Automatically rename Denote buffers when opening them so that instead of their long
   ;; file name they have a literal "[D]" followed by the file's title.  Read the doc
   ;; string of `denote-rename-buffer-format' for how to modify this.
@@ -239,6 +236,12 @@
   (setq denote-journal-title-format "%Y-%m-%d") ; Format yyyy-mm-dd
   (setq denote-journal-directory (expand-file-name "stages/" denote-directory))
   (setq denote-journal-keyword '("stages")) ; Stages are journals
+
+  ;; Do not include date, tags and ids in note files
+  (advice-add 'denote-journal-new-entry :around
+              (lambda (orig-fun &rest args)
+                (let ((denote-org-front-matter "#+title: %1$s\n\n"))
+                  (apply orig-fun args))))
 
   :bind ((:map global-map
                ("C-c d" . denote-journal-new-or-existing-entry))))
