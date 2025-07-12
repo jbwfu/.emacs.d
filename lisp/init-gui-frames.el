@@ -80,6 +80,12 @@
 
 (setq-default mode-line-compact t)
 
+;; Display current function
+
+;; (add-hook 'after-init-hook #'(lambda ()
+;;                                (which-function-mode 1)))
+;; (setq which-func-update-delay 0.125)
+
 ;; Diminish some built-in modes
 
 (use-package eldoc :diminish)
@@ -133,10 +139,10 @@
     (set-face-attribute 'default nil :family "Tempestypes" :height 140)
     (set-face-attribute 'fill-column-indicator nil :height 0.1 :weight 'thin)
     ;; No need for italic fonts
-    (set-face-italic 'italic nil)
+    ;; (set-face-italic 'italic nil)
     ;; Set up font for non-ascii fontset
     (set-fontset-font t 'han (font-spec :family "Noto Serif CJK SC"))
-    (set-fontset-font t 'kana (font-spec :family "Noto Serif CJK JP"))
+    ;; (set-fontset-font t 'kana (font-spec :family "Noto Serif CJK JP"))
     (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji"))
     (set-fontset-font t 'ucs   (font-spec :family "SF Pro") nil 'prepend))
   (remove-hook 'server-after-make-frame-hook #'sthenno/setup-fonts-and-faces)
@@ -150,6 +156,7 @@
   (add-hook 'server-after-make-frame-hook #'sthenno/setup-fonts-and-faces))
 
 ;; Typographic ligatures
+
 (use-package ligature
   :ensure t
   :config (let* ((ligs '("<---" "<--"  "<<-" "<-" "->" "-->" "--->" "<->" "<-->" "<--->"
