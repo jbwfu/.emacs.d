@@ -293,6 +293,7 @@
 
 ;; In addition to `org-src-fontify-natively'
 (add-to-list 'org-src-lang-modes (cons "python" 'python))
+(add-to-list 'org-src-lang-modes (cons "dockerfile" 'dockerfile-ts))
 
 (setq org-edit-src-turn-on-auto-save t)
 

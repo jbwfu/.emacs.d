@@ -154,6 +154,7 @@
                                init-projects
                                init-temp
                                init-comp
+                               init-containerd
                                init-eglot)
   "List of configuration modules to load.")
 

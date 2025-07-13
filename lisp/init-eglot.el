@@ -14,6 +14,20 @@
 
 ;;; Setup `treesit' for better performance for processing coding syntax
 
+
+(use-package treesit
+  :ensure nil
+  :config
+  (with-eval-after-load 'json-ts-mode
+    (let ((treesit-auto-install-grammar 'always))
+      (treesit-ensure-installed 'json))
+    )
+  (with-eval-after-load 'dockerfile-ts-mode
+    (let ((treesit-auto-install-grammar 'always))
+      (treesit-ensure-installed 'dockerfile))
+    )
+  )
+
 (use-package treesit-auto
   :ensure t
   :demand t
