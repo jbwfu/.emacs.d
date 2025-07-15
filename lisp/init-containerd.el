@@ -15,16 +15,11 @@
 
 (use-package docker
   :vc (docker
-       :url "https://github.com/jbwfu/docker.el"
-       :branch "support-custom-inspect-view-function")
+       :url "https://github.com/Silex/docker.el"
+       :branch "main")
   :ensure t
   :config
-  (setq docker-inspect-view-function #'(lambda ()
-                                         (cond
-                                          ((fboundp 'json-ts-mode) (json-ts-mode))
-                                          ((fboundp 'json-mode) (json-mode))
-                                          ((fboundp 'js-mode) (js-mode))))))
-
+  (setq docker-inspect-view-mode 'json-ts-mode))
 
 (provide 'init-containerd)
 

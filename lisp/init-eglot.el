@@ -17,24 +17,19 @@
 
 (use-package treesit
   :ensure nil
-  :config
-  (with-eval-after-load 'json-ts-mode
-    (let ((treesit-auto-install-grammar 'always))
-      (treesit-ensure-installed 'json))
-    )
-  (with-eval-after-load 'dockerfile-ts-mode
-    (let ((treesit-auto-install-grammar 'always))
-      (treesit-ensure-installed 'dockerfile))
-    )
-  )
+  :custom
+  ;; Note: The value of `treesit-auto-install-grammar` being 'ask will
+  ;; conflict with `treesit-auto-install`. The `treesit` installation
+  ;; prompt is always prioritized over `treesit-auto`.
+  (treesit-auto-install-grammar 'always))
 
 (use-package treesit-auto
   :ensure t
-  :demand t
   :config
-  (setopt treesit-auto-install t)
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode 1))
+  (global-treesit-auto-mode)
+  :custom
+  (treesit-auto-install t))
 
 ;; Append *-mode-hook to *-ts-mode-hook for modes in `major-mode-remap-list'
 (mapc #'(lambda (major-mode-remap)
