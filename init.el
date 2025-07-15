@@ -102,11 +102,11 @@
         (text "Funding for this program was made possible by viewers like you."))
     (message "%s %s" icon text)))
 
-;; Open today’s journal at startup
-(setq initial-buffer-choice #'(lambda ()
-                                (when (fboundp 'denote-journal-new-or-existing-entry)
-                                  (call-interactively
-                                   #'denote-journal-new-or-existing-entry))))
+;; ;; Open today’s journal at startup
+;; (setq initial-buffer-choice #'(lambda ()
+;;                                 (when (fboundp 'denote-journal-new-or-existing-entry)
+;;                                   (call-interactively
+;;                                    #'denote-journal-new-or-existing-entry))))
 
 ;;; Package Management
 

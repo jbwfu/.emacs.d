@@ -390,12 +390,7 @@
   (add-hook 'prog-mode-hook #'(lambda ()
                                 (corfu-popupinfo-mode 1)))
 
-  :bind (:map corfu-map
-              ("<down>"   . corfu-next)
-              ("TAB"      . corfu-next)
-              ([tab]      . corfu-next)
-              ("<up>"     . corfu-previous)
-              ("<escape>" . corfu-quit)))
+  :bind (:map corfu-map ("<escape>" . corfu-quit)))
 
 (provide 'init-comp)
 
