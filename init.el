@@ -155,6 +155,7 @@
                                init-temp
                                init-comp
                                init-containerd
+                               init-reader
                                init-eglot)
   "List of configuration modules to load.")
 
