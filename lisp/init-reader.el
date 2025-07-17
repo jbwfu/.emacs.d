@@ -28,6 +28,11 @@
 
   (use-package saveplace-pdf-view :ensure t))
 
+;; Epub reader
+(use-package nov
+  :ensure t
+  :mode ("\\.epub\\'" . nov-mode))
+
 (provide 'init-reader)
 
 ;;; init-reader.el ends here
