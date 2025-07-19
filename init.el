@@ -26,11 +26,8 @@
 ;; Disable adaptive buffering for more predictable performance
 (setq process-adaptive-read-buffering nil)
 
-;; Prevent font cache compaction during GC for better responsiveness
-(setq inhibit-compacting-font-caches t)
-
 ;; Always load newer elisp files to ensure using latest version
-(setq load-prefer-newer t)
+;; (setq load-prefer-newer t)
 
 ;; File management settings
 ;;
@@ -53,8 +50,13 @@
 (setq fast-but-imprecise-scrolling t)
 
 ;; Prevent automatic frame resizing for better performance
-(setq frame-inhibit-implied-resize t)
-;; (setq frame-inhibit-implied-resize 'force)
+(setq frame-inhibit-implied-resize 'force)
+
+;; Don't ping things that look like domain names.
+(setq ffap-machine-p-known 'reject)
+
+;; Remove command line options that aren't relevant to our current OS
+(setq command-line-x-option-alist nil)
 
 
 ;; Reduce rendering/line scan work for Emacs by not rendering cursors or regions in
@@ -83,7 +85,6 @@
       initial-scratch-message nil)
 
 ;;; User configurations
-
 (setq user-full-name user-login-name
       user-mail-address "sthenno@sthenno.com")
 
@@ -102,12 +103,6 @@
         (text "Funding for this program was made possible by viewers like you."))
     (message "%s %s" icon text)))
 
-;; ;; Open today’s journal at startup
-;; (setq initial-buffer-choice #'(lambda ()
-;;                                 (when (fboundp 'denote-journal-new-or-existing-entry)
-;;                                   (call-interactively
-;;                                    #'denote-journal-new-or-existing-entry))))
-
 ;;; Package Management
 
 ;; Store customizations
@@ -117,8 +112,8 @@
 
 ;; Initialize package system
 (require 'package)
-
 (setq package-vc-allow-build-commands t
+      package-vc-register-as-project nil
       package-install-upgrade-built-in t
       package-archives '(("gnu-devel" . "https://elpa.gnu.org/devel/")
                          ("melpa" . "https://melpa.org/packages/")
@@ -127,44 +122,31 @@
 (unless (bound-and-true-p package--initialized)
   (package-initialize))
 
-(setq use-package-enable-imenu-support t
-      use-package-compute-statistics t
-      use-package-vc-prefer-newest t)
+;; Load the patched `org'
+(progn
+  (add-to-list 'load-path (locate-user-emacs-file "site-lisp/org/lisp/"))
+  (setq features (delq 'org features))
+  (require 'org))
 
-;; Core package configurations
-;;
-;; Essential packages
+;; Declare interactive functions used at startup to inform the byte-compiler
+;; (let ((startup-buffer 'denote-journal-new-or-existing-entry))
+;;   (declare-function startup-buffer "denote-journal" t)
+;;   (setq initial-buffer-choice startup-buffer))
 
-;; (use-package exec-path-from-shell
-;;   :ensure t
-;;   :init (exec-path-from-shell-initialize))
-
-(use-package org :load-path "site-lisp/org/lisp/" :demand t)
-(use-package diminish :ensure t :demand t)
+;; Store customizations
+;; (setq custom-file (make-temp-file "tmp"))
 
 ;; Load configuration modules
-;;
-(add-to-list 'load-path (locate-user-emacs-file "lisp/"))
-
-;; Define required modules
-(defvar sthenno/init-modules '(init-system
-                               init-gui-frames
-                               init-org
-                               init-editing-utils
-                               init-projects
-                               init-temp
-                               init-comp
-                               init-containerd
-                               init-reader
-                               init-eglot)
-  "List of configuration modules to load.")
-
-;; Load modules safely
-(dolist (mod sthenno/init-modules)
-  (condition-case err
-      (require mod)
-    (error
-     (message "Failed to load mod \"%s\": %s" mod err))))
+(progn
+  (add-to-list 'load-path (locate-user-emacs-file "lisp/"))
+  (defconst sthenno/init-modules
+    '(system gui-frames org editing-utils projects temp comp containerd reader eglot)
+    "List of configuration modules to load.")
+  (dolist (mod sthenno/init-modules)
+    (let ((mod-sym (intern (format "init-%s" mod))))
+      (condition-case-unless-debug err
+          (require mod-sym)
+        (message "Error loading module %S: %s" mod-sym (error-message-string err))))))
 
 (provide 'init)
 
