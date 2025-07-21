@@ -114,20 +114,23 @@ Activate again to undo this. If the window changes before then, the undo expires
 
 ;;; Locate position history
 (use-package saveplace
-  :config (save-place-mode 1))
+  :hook (after-init . save-place-mode)
+  :config
+  (setq save-place-file (locate-user-emacs-var-file "save-place.eld")))
 
 (use-package savehist
   :init
   (setq history-length 128)
   (setq history-delete-duplicates t)
+  :hook (after-init . savehist-mode)
   :config
-  (setq savehist-file (locate-user-emacs-file "savehist"))
-  (setq savehist-save-minibuffer-history t)
-  (savehist-mode 1))
+  (setq savehist-file (locate-user-emacs-var-file "savehist.eld"))
+  (setq savehist-save-minibuffer-history t))
 
 (use-package recentf
   :hook (after-init . recentf-mode)
   :config
+  (setq recentf-save-file (locate-user-emacs-var-file "recentf-save.eld"))
   (setq recentf-max-saved-items 100)
   (setq recentf-save-file-modes nil)
   (setq recentf-keep nil)

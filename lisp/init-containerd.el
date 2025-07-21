@@ -14,9 +14,6 @@
 ;;; Docker
 
 (use-package docker
-  :vc (docker
-       :url "https://github.com/Silex/docker.el"
-       :branch "main")
   :ensure t
   :config
   (setq docker-inspect-view-mode 'json-ts-mode))

@@ -48,6 +48,27 @@
                         (delete-dups (append file-name-handler-alist
                                              old-file-name-handler-alist)))))))
 
+;; Inspired by the `no-littering` package.
+(defvar user-emacs-var-directory
+  (abbreviate-file-name (expand-file-name "var/" user-emacs-directory))
+  "Directory for Emacs packages to store variable data.
+This includes caches, history files, and other runtime state that is not
+part of the user's direct configuration.
+The default is a subdirectory named 'var' inside `user-emacs-directory'.
+Note that this should end with a directory separator.
+See also `locate-user-emacs-var-file'.")
+
+(defun locate-user-emacs-var-file (file)
+  "Return an absolute file name for data storage in `user-emacs-var-directory'.
+This function takes a relative FILE name and returns its full path inside
+`user-emacs-var-directory'. Creating the directory if it does not exist.
+
+FILE should be a file name, which can include subdirectories,
+relative to the data directory. For example, `package-name/data.eld'."
+  (unless (file-directory-p user-emacs-var-directory)
+    (make-directory user-emacs-var-directory t))
+  (abbreviate-file-name (expand-file-name file user-emacs-var-directory)))
+
 ;; Set default frame parameters for all frames
 ;; These settings create a clean, modern UI appearance
 (setq-default default-frame-alist '(

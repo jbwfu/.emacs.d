@@ -20,7 +20,14 @@
               ("o" . #'pdf-outline)
               ("q" . #'kill-current-buffer))
   :config
-  (setopt pdf-view-display-size 'fit-page)
+  (setq pdf-view-display-size 'fit-page)
+
+  (let ((target-directory (locate-user-emacs-var-file "pdf-tools/"))
+        (executable (concat "epdfinfo" (when (eq system-type 'windows-nt) ".exe"))))
+    (unless (file-directory-p target-directory)
+      (make-directory target-directory t))
+    (setq pdf-info-epdfinfo-program (concat target-directory executable)))
+
 
   (use-package pdf-outline
     :bind (:map pdf-outline-buffer-mode-map
@@ -31,7 +38,9 @@
 ;; Epub reader
 (use-package nov
   :ensure t
-  :mode ("\\.epub\\'" . nov-mode))
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (setq nov-save-place-file (locate-user-emacs-var-file "nov-save-place.eld")))
 
 (provide 'init-reader)
 

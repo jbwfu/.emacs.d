@@ -83,11 +83,6 @@
   (orderless-define-completion-style orderless-literal-only
     (orderless-style-dispatchers nil)
     (orderless-matching-styles '(orderless-literal)))
-  (defun sthenno/completion-style-corfu ()
-    (interactive)
-    (setq-local completion-styles '(orderless-literal-only basic)
-                completion-category-overrides nil
-                completion-category-defaults nil))
   (setq-default orderless-matching-styles
                 '(orderless-literal orderless-prefixes)))
 
@@ -315,13 +310,11 @@
 ;;; The main completion frontend by Corfu
 (use-package corfu
   :ensure t
-  :demand t
-  :init (add-hook 'after-init-hook #'(lambda ()
-                                       (global-corfu-mode 1)))
+  :hook (after-init . global-corfu-mode)
   :config
   (setq corfu-auto t
         corfu-auto-delay 0.05           ; Making this to 0 is too expensive
-        corfu-auto-prefix 1)
+        corfu-auto-prefix 2)
   (setq corfu-count 8
         corfu-scroll-margin 4)
   (setq corfu-min-width 20
@@ -344,8 +337,12 @@
     (keymap-set corfu-map "RET" #'corfu-send))
   (add-hook 'eshell-mode-hook #'sthenno/corfu-eshell-setup)
 
+  (defun sthenno/completion-style-corfu ()
+    (interactive)
+    (setq-local completion-styles '(orderless-literal-only basic)
+                completion-category-overrides nil
+                completion-category-defaults nil))
   (add-hook 'corfu-mode-hook #'sthenno/completion-style-corfu)
-  (keymap-set corfu-map "RET" #'corfu-insert)
 
   ;; Combined sorting
   (defun sthenno/corfu-combined-sort (candidates)
@@ -360,19 +357,25 @@
         candidates)))
   (setq corfu-sort-override-function #'sthenno/corfu-combined-sort)
 
-  ;; Maintain a list of recently selected candidates
-  (corfu-history-mode 1)
-  (add-to-list 'savehist-additional-variables 'corfu-history)
+  :bind (:map corfu-map
+              ("<escape>" . corfu-quit)
+              ("RET" . corfu-insert)))
 
-  ;; Popup candidates info
+(use-package corfu-history
+  :hook (corfu-mode . corfu-history-mode)
+  :config
+  (with-eval-after-load 'savehist
+    (add-to-list 'savehist-additional-variables 'corfu-history)))
+
+(use-package corfu-popupinfo
+  ;; :hook (corfu-mode . corfu-popupinfo-mode)
+  :config
   (setq corfu-popupinfo-delay '(0.5 . 0.25))
   (setq corfu-popupinfo-hide nil)
   (setq corfu-popupinfo-max-width 80
         corfu-popupinfo-min-width 20)
   (add-hook 'prog-mode-hook #'(lambda ()
-                                (corfu-popupinfo-mode 1)))
-
-  :bind (:map corfu-map ("<escape>" . corfu-quit)))
+                                (corfu-popupinfo-mode 1))))
 
 (provide 'init-comp)
 

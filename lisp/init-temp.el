@@ -14,7 +14,7 @@
 (use-package abbrev
   :diminish
   :init
-  (setq abbrev-file-name (locate-user-emacs-file "abbrev-defs.el"))
+  (setq abbrev-file-name (locate-user-emacs-var-file "abbrev.el"))
 
   ;; Do not ask before saving abbrevs
   (setq save-abbrevs 'silently)

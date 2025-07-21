@@ -98,6 +98,13 @@
 ;; Diminish some built-in modes
 (use-package eldoc :diminish)
 
+;;; Transient
+(use-package transient
+  :config
+  (setq transient-levels-file  (locate-user-emacs-var-file "transient/levels.el")
+        transient-values-file  (locate-user-emacs-var-file "transient/values.el")
+        transient-history-file (locate-user-emacs-var-file "transient/history.el")))
+
 ;;; Parentheses
 (use-package paren
   :config

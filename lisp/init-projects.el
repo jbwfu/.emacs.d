@@ -11,8 +11,12 @@
 ;;; Code:
 ;;
 
-(setq project-prompter #'project-prompt-project-name)
-;; (setq project-mode-line t)
+(use-package project
+  :ensure nil
+  :config
+  ;; (setq project-mode-line t)
+  (setq project-list-file (locate-user-emacs-var-file "project-list.eld"))
+  (setq project-prompter #'project-prompt-project-name))
 
 ;;; Git client using Magit
 

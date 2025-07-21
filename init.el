@@ -140,7 +140,7 @@
 (progn
   (add-to-list 'load-path (locate-user-emacs-file "lisp/"))
   (defconst sthenno/init-modules
-    '(system gui-frames org editing-utils projects temp comp containerd reader eglot)
+    '(system gui-frames essentials org editing-utils projects temp comp containerd reader eglot)
     "List of configuration modules to load.")
   (dolist (mod sthenno/init-modules)
     (let ((mod-sym (intern (format "init-%s" mod))))

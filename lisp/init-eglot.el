@@ -17,11 +17,19 @@
 
 (use-package treesit
   :ensure nil
-  :custom
+  :config
+  (defvar treesit:load-path (locate-user-emacs-var-file "tree-sitter"))
+  (add-to-list 'treesit-extra-load-path treesit:load-path)
+  (defun treesit:patch--path (fn &rest args)
+    (let ((lang (car args))
+          (out-dir (or (cadr args) treesit:load-path)))
+      (funcall fn lang out-dir)))
+  (advice-add #'treesit-install-language-grammar :around #'treesit:patch--path)
+
   ;; Note: The value of `treesit-auto-install-grammar` being 'ask will
   ;; conflict with `treesit-auto-install`. The `treesit` installation
   ;; prompt is always prioritized over `treesit-auto`.
-  (treesit-auto-install-grammar 'always))
+  (setq treesit-auto-install-grammar 'always))
 
 (use-package treesit-auto
   :ensure t
