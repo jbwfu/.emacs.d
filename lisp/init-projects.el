@@ -25,6 +25,17 @@
   :config (setq magit-diff-refine-hunk t)
   :bind ("C-x g" . magit-status))
 
+(use-package magit-delta
+  :ensure t
+  :if (executable-find "delta")
+  :hook (magit-mode . magit-delta-mode)
+  :config
+  (setq magit-delta-delta-args
+        `("--max-line-distance" "0.6"
+          "--true-color" ,(if xterm-color--support-truecolor "always" "never")
+          "--color-only"
+          "--syntax-theme" "none")))
+
 ;;; Xref
 
 (use-package xref
