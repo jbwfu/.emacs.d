@@ -100,7 +100,12 @@
 ;;; Completions in minibuffers
 (use-package vertico
   :ensure t
-  :demand t
+  :hook ((after-init . vertico-mode)
+         (rfn-eshadow-update-overlay . vertico-directory-tidy))
+  :bind ((:map vertico-map
+               ("<tab>"       . vertico-insert)
+               ("<return>"    . vertico-directory-enter)
+               ("<backspace>" . vertico-directory-delete-char)))
   :init
   (advice-add #'tmm-add-prompt :after #'minibuffer-hide-completions)
 
@@ -119,42 +124,44 @@
                                                  #'completion--in-region)
                                                args)))
 
-  ;; Hooks
-  (add-hook 'after-init-hook #'vertico-mode)
-
   :config
+  ;; Add some simple indicator symbols here to make things clear
+  ;; (setq vertico-count-format (cons "[ %-6s ] " "%s of %s"))
+
   (setq vertico-count 15)
   (setq vertico-resize t)
   (setq vertico-scroll-margin 4)
   (setq vertico-cycle nil)
 
-  ;; Add some simple indicator symbols here to make things clear
-  (setq vertico-count-format (cons "[ %-6s ] " "%s of %s"))
-
+  :custom-face
   ;; Do not render italic fonts
-  (set-face-attribute 'vertico-group-title nil :slant 'normal)
-
-  ;; Correct file path when changed (tidy shadowed file names)
-  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
-
-  :bind ((:map vertico-map
-               ("<tab>"       . vertico-insert)
-               ("<return>"    . vertico-directory-enter)
-               ("<backspace>" . vertico-directory-delete-char))))
+  (vertico-group-title ((t (:slant normal)))))
 
 ;;; Rich annotations for minibuffer
 (use-package marginalia
   :ensure t
+  :hook (after-init . marginalia-mode)
   :init
   (setq marginalia-field-width 50)
   (setq marginalia-separator " ")
   (setq marginalia-align 'left)
-  (setq marginalia-align-offset 4)
-  (marginalia-mode 1))
+  (setq marginalia-align-offset 4))
 
 ;;; Consult is useful previewing current content in buffer
 (use-package consult
   :ensure t
+  :bind ((:map global-map
+               ("s-b" . consult-buffer)
+               ("C-x b" . consult-buffer)
+               ("C-s" . consult-line)
+               ("s-;" . consult-goto-line)
+               ("C-v" . consult-yank-pop)
+               ("s-m" . consult-imenu-multi)
+               ("s-n" . consult-recent-file)
+               ("M-i" . consult-info)
+               ("M-s" . consult-ripgrep))
+         (:map consult-narrow-map
+               ("?" . consult-narrow-help)))
   :init
   (setq register-preview-delay 0.125
         register-preview-function #'consult-register-format)
@@ -170,11 +177,12 @@
   (setq consult-narrow-key nil)
 
   ;; Use `consult-ripgrep' instead of `project-find-regexp' in `project'
-  (keymap-substitute project-prefix-map #'project-find-regexp #'consult-ripgrep)
-  (cl-nsubstitute-if '(consult-ripgrep "Find regexp")
-                     (pcase-lambda (`(,cmd _))
-                       (eq cmd #'project-find-regexp))
-                     project-switch-commands)
+  (with-eval-after-load 'project
+    (keymap-substitute project-prefix-map #'project-find-regexp #'consult-ripgrep)
+    (cl-nsubstitute-if '(consult-ripgrep "Find regexp")
+                       (pcase-lambda (`(,cmd _))
+                         (eq cmd #'project-find-regexp))
+                       project-switch-commands))
 
   ;; Customize `consult' minibuffer prompts
   (setq consult-buffer-sources '(consult--source-modified-buffer
@@ -198,20 +206,7 @@
                  'multi-category `(file . ,file))
                 items)))))
   (plist-put consult--source-recent-file
-             :items #'sthenno/consult--source-recentf-items)
-
-  :bind ((:map global-map
-               ("s-b" . consult-buffer)
-               ("C-x b" . consult-buffer)
-               ("C-s" . consult-line)
-               ("s-;" . consult-goto-line)
-               ("C-v" . consult-yank-pop)
-               ("s-m" . consult-imenu-multi)
-               ("s-n" . consult-recent-file)
-               ("M-i" . consult-info)
-               ("M-s" . consult-ripgrep))
-         (:map consult-narrow-map
-               ("?" . consult-narrow-help))))
+             :items #'sthenno/consult--source-recentf-items))
 
 ;;; Dabbrev settings
 (use-package dabbrev
@@ -368,14 +363,12 @@
     (add-to-list 'savehist-additional-variables 'corfu-history)))
 
 (use-package corfu-popupinfo
-  ;; :hook (corfu-mode . corfu-popupinfo-mode)
+  :hook (prog-mode . corfu-popupinfo-mode)
   :config
   (setq corfu-popupinfo-delay '(0.5 . 0.25))
   (setq corfu-popupinfo-hide nil)
   (setq corfu-popupinfo-max-width 80
-        corfu-popupinfo-min-width 20)
-  (add-hook 'prog-mode-hook #'(lambda ()
-                                (corfu-popupinfo-mode 1))))
+        corfu-popupinfo-min-width 20))
 
 (provide 'init-comp)
 

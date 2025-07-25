@@ -74,6 +74,7 @@
 ;; Indentation highlights
 (use-package indent-bars
   :ensure t
+  :hook ((python-ts-mode bash-ts-mode) . indent-bars-mode)
   :config
   (setq indent-bars-no-descend-lists t  ; no extra bars in continued func arg lists
         indent-bars-treesit-support t
@@ -83,13 +84,7 @@
         indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1)
         indent-bars-highlight-current-depth '(:blend 0.8)
         indent-bars-starting-column 0
-        indent-bars-display-on-blank-lines t)
-
-  ;; Hooks
-  (add-hook 'python-ts-mode-hook  #'(lambda ()
-                                      (indent-bars-mode 1)))
-  (add-hook 'bash-ts-mode-hook    #'(lambda ()
-                                      (indent-bars-mode 1))))
+        indent-bars-display-on-blank-lines t))
 
 ;;; Inhibit passing these delimiters
 (defun sthenno/inhibit-specific-delimiters ()
@@ -106,7 +101,9 @@ This disables syntax highlighting and auto-paring for such entries."
 (delete-selection-mode 1)
 
 ;; Edit multiple occurrences in the same way simultaneously using "C-;"
-(use-package iedit :ensure t)
+(use-package iedit
+  :ensure t
+  :bind ("C-;" . iedit-mode))
 
 ;; Expand region, use it with shift-selection
 (use-package expand-region

@@ -13,6 +13,7 @@
 
 (use-package project
   :ensure nil
+  :defer t
   :config
   ;; (setq project-mode-line t)
   (setq project-list-file (locate-user-emacs-var-file "project-list.eld"))
@@ -40,8 +41,7 @@
 
 (use-package xref
   :init (setq xref-search-program 'ripgrep)
-  :bind (:map global-map
-              ("M-/" . xref-find-references)))
+  :bind (("M-/" . xref-find-references)))
 
 (provide 'init-projects)
 

@@ -79,6 +79,7 @@
 ;;; Pulse highlight line on demand or after running select functions
 (use-package pulsar
   :ensure t
+  :hook (after-init . pulsar-global-mode)
   :config
   (setq pulsar-pulse t)
   (setq pulsar-delay 0.125)
@@ -89,8 +90,7 @@
   (with-eval-after-load 'consult
     (add-hook 'minibuffer-setup-hook #'pulsar-pulse-line)
     (add-hook 'consult-after-jump-hook #'pulsar-recenter-top)
-    (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry))
-  (pulsar-global-mode 1))
+    (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry)))
 
 ;;; Mode line
 (setq-default mode-line-compact t)
@@ -100,32 +100,33 @@
 
 ;;; Transient
 (use-package transient
-  :config
-  (setq transient-levels-file  (locate-user-emacs-var-file "transient/levels.el")
-        transient-values-file  (locate-user-emacs-var-file "transient/values.el")
-        transient-history-file (locate-user-emacs-var-file "transient/history.el")))
+  :defer t
+  :init
+  (let ((target-directory (locate-user-emacs-var-file "transient/")))
+    (setq transient-levels-file  (concat target-directory "levels.el")
+          transient-values-file  (concat target-directory "values.el")
+          transient-history-file (concat target-directory "history.el"))))
 
 ;;; Parentheses
 (use-package paren
+  :hook (after-init . show-paren-mode)
   :config
   (custom-set-faces
-   '(show-paren-match ((t :inherit 'bold))))
-  (show-paren-mode 1))
+   '(show-paren-match ((t :inherit 'bold)))))
 
 ;; Dim parenthesis for s-expressions
 (use-package paren-face
   :ensure t
-  :demand t
+  :hook (after-init . global-paren-face-mode)
   :config
   (custom-set-faces
-   '(parenthesis ((t (:foreground "#989898")))))
-  (global-paren-face-mode 1))
+   '(parenthesis ((t (:foreground "#989898"))))))
 
 ;; Hightlight parentheses dynamically surrounding point
 (use-package highlight-parentheses
   :ensure t
   :diminish
-  :config (global-highlight-parentheses-mode 1))
+  :hook (after-init . global-highlight-parentheses-mode))
 
 ;;; Cursor faces
 
@@ -147,7 +148,7 @@
 
 ;;; Font settings
 
-(defun sthenno/setup-fonts-and-faces (&optional _args)
+(defun sthenno/setup-fonts-and-faces (&optional _)
   "Set up fonts and faces."
   (progn
     (set-face-attribute 'default nil :family "Tempestypes" :height 140)
@@ -173,6 +174,7 @@
 
 (use-package ligature
   :ensure t
+  :hook (after-init . global-ligature-mode)
   :config (let* ((ligs '("<---" "<--"  "<<-" "<-" "->" "-->" "--->" "<->" "<-->" "<--->"
                          "<---->" "<!--"
                          "<==" "<===" "<=" "=>" "==>" "===>" ">=" "<=>" "<==>" "<===>"
@@ -183,10 +185,7 @@
                  (ligs-dict (append '("__" "--") ligs))
                  (ligs-text (append '("__")      ligs)))
             (ligature-set-ligatures 'prog-mode ligs-dict)
-            (ligature-set-ligatures 'text-mode ligs-text)
-
-            ;; Enables ligature checks globally in all buffers
-            (global-ligature-mode 1)))
+            (ligature-set-ligatures 'text-mode ligs-text)))
 
 ;; Make `fill-column-indicator' thinner
 (set-face-attribute 'fill-column-indicator nil :height 0.1 :weight 'thin)

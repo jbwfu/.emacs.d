@@ -139,9 +139,9 @@ Activate again to undo this. If the window changes before then, the undo expires
   (setq recentf-show-file-shortcuts-flag nil))
 
 (use-package autorevert
+  :hook (after-init . global-auto-revert-mode)
   :config
-  (setopt auto-revert-use-notify nil)
-  (global-auto-revert-mode 1))
+  (setopt auto-revert-use-notify nil))
 
 ;;; Misc options
 
@@ -257,7 +257,7 @@ Activate again to undo this. If the window changes before then, the undo expires
   :vc (:url "https://github.com/jdtsmith/ultra-scroll")
   :init (setq scroll-margin 0
               scroll-conservatively 105)
-  :config (ultra-scroll-mode 1))
+  :hook (after-init . ultra-scroll-mode))
 
 (provide 'init-system)
 

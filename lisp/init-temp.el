@@ -19,24 +19,18 @@
   ;; Do not ask before saving abbrevs
   (setq save-abbrevs 'silently)
 
-  ;; Hooks
-  (add-hook 'text-mode-hook #'(lambda ()
-                                (abbrev-mode 1)))
-  (add-hook 'prog-mode-hook #'(lambda ()
-                                (abbrev-mode 1)))
-  :bind (:map global-map
-              ("C-x a e" . edit-abbrevs)
-              ("C-x a a" . add-global-abbrev)))
+  :hook ((text-mode prog-mode) . abbrev-mode)
+  :bind (("C-x a e" . edit-abbrevs)
+         ("C-x a a" . add-global-abbrev)))
 
 ;;; YASnippet
 
 (use-package yasnippet
   :ensure t
-  :demand t
+  :hook (after-init . yas-global-mode)
   :diminish (yas-minor-mode)
   :config
-  (setq yas-triggers-in-field t)
-  (yas-global-mode 1))
+  (setq yas-triggers-in-field t))
 
 (provide 'init-temp)
 

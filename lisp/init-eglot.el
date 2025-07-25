@@ -17,6 +17,7 @@
 
 (use-package treesit
   :ensure nil
+  :defer t
   :config
   (defvar treesit:load-path (locate-user-emacs-var-file "tree-sitter"))
   (add-to-list 'treesit-extra-load-path treesit:load-path)
@@ -33,9 +34,9 @@
 
 (use-package treesit-auto
   :ensure t
+  :hook (prog-mode . global-treesit-auto-mode)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode)
   :custom
   (treesit-auto-install t))
 
@@ -118,10 +119,10 @@ interpreter."
         (message "No uv Python environment found in %s" project-root))))
   (add-hook 'python-ts-mode-hook 'sthenno/python-venv)
 
-  :bind ((:map python-ts-mode-map
-               ("s-<up>" . python-nav-beginning-of-block)
-               ("s-<down>" . python-nav-end-of-block)
-               ("C-x m" . python-nav-if-name-main))))
+  :bind (:map python-ts-mode-map
+              ("s-<up>" . python-nav-beginning-of-block)
+              ("s-<down>" . python-nav-end-of-block)
+              ("C-x m" . python-nav-if-name-main)))
 
 ;;; Flymake
 
@@ -138,11 +139,11 @@ interpreter."
 
 (use-package flymake-ruff
   :ensure t
-  :config (add-hook 'python-ts-mode-hook 'flymake-ruff-load))
+  :hook (python-ts-mode . flymake-ruff-load))
 
 (use-package ruff-format
   :ensure t
-  :config (add-hook 'python-ts-mode-hook 'ruff-format-on-save-mode))
+  :hook (python-ts-mode . ruff-format-on-save-mode))
 
 ;;; AI
 

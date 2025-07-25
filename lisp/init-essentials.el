@@ -13,7 +13,7 @@
 
 (use-package url
   :ensure nil
-  :config
+  :init
   (setq url-configuration-directory (locate-user-emacs-var-file "url/"))
   ;; (setq url-cache-directory (locate-user-emacs-var-file "url/cache"))
   (setq url-cookie-file (locate-user-emacs-var-file "url/cookies.el"))
@@ -21,18 +21,21 @@
 
 (use-package tramp
   :ensure nil
-  :config
+  :defer t
+  :init
   (setq tramp-persistency-file-name
         (locate-user-emacs-var-file "tramp/persistency.eld")))
 
 (use-package bookmark
   :ensure nil
-  :config
+  :defer t
+  :init
   (setq bookmark-default-file (locate-user-emacs-var-file "bookmark-default.eld")))
 
 (use-package eshell
   :ensure nil
-  :config
+  :defer t
+  :init
   (setq eshell-directory-name (locate-user-emacs-var-file "eshell/")))
 
 (provide 'init-essentials)

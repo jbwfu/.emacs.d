@@ -15,6 +15,7 @@
 
 (use-package docker
   :ensure t
+  :defer t
   :config
   (setq docker-inspect-view-mode 'json-ts-mode))
 
