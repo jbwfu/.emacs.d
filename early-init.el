@@ -91,9 +91,8 @@ relative to the data directory. For example, `package-name/data.eld'."
 (setq-default initial-frame-alist default-frame-alist)
 
 (setq package-enable-at-startup nil)
-
-(add-to-list 'features 'org)
-(add-to-list 'features 'org-loaddefs)
+;; (add-to-list 'features 'org)
+;; (add-to-list 'features 'org-loaddefs)
 
 (provide 'early-init)
 

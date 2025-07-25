@@ -123,10 +123,10 @@
   (package-initialize))
 
 ;; Load the patched `org'
-(progn
-  (add-to-list 'load-path (locate-user-emacs-file "site-lisp/org/lisp/"))
-  (setq features (delq 'org features))
-  (require 'org))
+;; (progn
+;;   (add-to-list 'load-path (locate-user-emacs-file "site-lisp/org/lisp/"))
+;;   (setq features (delq 'org features))
+;;   (require 'org))
 
 ;; Declare interactive functions used at startup to inform the byte-compiler
 ;; (let ((startup-buffer 'denote-journal-new-or-existing-entry))
