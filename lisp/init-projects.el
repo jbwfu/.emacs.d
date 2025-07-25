@@ -27,10 +27,15 @@
   :bind ("C-x g" . magit-status))
 
 (use-package magit-delta
+  :disabled
   :ensure t
   :if (executable-find "delta")
   :hook (magit-mode . magit-delta-mode)
   :config
+  ;; Workaround for a visual bug in delta.
+  ;; Forcing +/- markers to be visible fixes it.
+  (setq magit-delta-hide-plus-minus-markers nil)
+
   (setq magit-delta-delta-args
         `("--max-line-distance" "0.6"
           "--true-color" ,(if xterm-color--support-truecolor "always" "never")
