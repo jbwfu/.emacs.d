@@ -40,13 +40,17 @@
 
 ;; Indentations
 ;;
+(defcustom sthenno/buffer-format-excluded-modes '(python-mode python-ts-mode)
+  "A list of major-modes to be excluded from `sthenno/buffer-format`."
+  :type '(repeat symbol)
+  :group 'sthenno)
+
 (defun sthenno/buffer-format ()
   "Format the current buffer using indentation."
   (interactive)
 
   ;; Using different formatters based on the major-mode
-  (cond ((or (derived-mode-p 'python-mode)
-             (derived-mode-p 'python-ts-mode)))
+  (cond ((member major-mode sthenno/buffer-format-excluded-modes))
         (t
          (save-excursion
            ;; Convert tabs to spaces first, so indentation doesn’t introduce them

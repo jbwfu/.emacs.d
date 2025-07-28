@@ -56,15 +56,14 @@
 
 (use-package eglot
   :ensure t
+  :defer t
+  :hook (prog-mode . (lambda ()
+                       (unless (derived-mode-p
+                                'emacs-lisp-mode 'lisp-mode
+                                'makefile-mode )
+                         (eglot-ensure))))
   :config
-  (setq eglot-server-programs
-        `(((python-mode python-ts-mode) . ("basedpyright-langserver" "--stdio"))))
-
-  ;; Hooks
-  (add-hook 'python-ts-mode-hook 'eglot-ensure)
-
-  :bind (:map eglot-mode-map
-              ("<f2>" . eglot-rename)))
+  (setq eglot-autoshutdown t))
 
 ;; Boost eglot using lsp-booster
 
@@ -74,8 +73,79 @@
        :branch "main")
   :ensure t
   :after eglot
-  :init (add-to-list 'exec-path (locate-user-emacs-file "bin/"))
-  :config (eglot-booster-mode 1))
+  :hook (prog-mode . eglot-booster-mode)
+  :config
+  (defun sthenno/fetch-url-content-if-200 (url)
+    "Fetch the content of URL only if the HTTP status is 200 OK."
+    (let ((response-buffer (url-retrieve-synchronously url)))
+      (when (not response-buffer) nil)
+      (with-current-buffer response-buffer
+        (goto-char (point-min))
+        (let* ((first-line (buffer-substring-no-properties (point) (line-end-position)))
+               (is-match (string-match "HTTP/.*\s\\([0-9]+\\)" first-line))
+               (status-code (when is-match
+                              (string-to-number (match-string 1 first-line)))))
+          (when (eq 200 status-code)
+            (re-search-forward "^$")
+            (delete-region (+ (point) 1) (point-min))
+            (buffer-string))))))
+
+  (defun sthenno/install-eglot-booster (install-dir)
+    "Download and install the latest version of emacs-lsp-booster.
+The executable will be placed in the specified INSTALL-DIR."
+    (interactive "DInstall directory: ")
+    (let* ((os-tag (pcase system-type
+                     ('gnu/linux "linux")
+                     ('darwin "darwin")
+                     ('windows-nt "windows")
+                     (_ (error "Unsupported operating system: %s" system-type))))
+           (repo "blahgeek/emacs-lsp-booster")
+           (api-url (format "https://api.github.com/repos/%s/releases/latest" repo))
+           (json-data nil))
+
+      (let ((json-string (sthenno/fetch-url-content-if-200 api-url)))
+        (if json-string
+            (setq json-data (json-read-from-string json-string))
+          (error "Failed to fetch release information from GitHub API.")))
+
+      (message "Installing emacs-lsp-booster...")
+      (unless (file-directory-p install-dir) (make-directory install-dir t))
+
+      (let* ((assets (alist-get 'assets json-data))
+             (asset-name-regex (format "emacs-lsp-booster_.*%s.*\\.zip$" os-tag))
+             (zip-asset (cl-find-if
+                         (lambda (asset)
+                           (string-match-p asset-name-regex (alist-get 'name asset)))
+                         assets))
+             (zip-name (when zip-asset (alist-get 'name zip-asset)))
+             (zip-url (when zip-asset (alist-get 'browser_download_url zip-asset)))
+             (temp-dir nil))
+
+        (unless zip-url
+          (error "Could not find a matching release asset for %s" os-tag))
+        (message "Found download asset: %s" zip-name)
+
+        (setq temp-dir (make-temp-file "emacs-lsp-booster-" t))
+        (unwind-protect
+            (let* ((temp-zip-file (expand-file-name zip-name temp-dir))
+                   (target-name (concat "emacs-lsp-booster"
+                                        (if (eq system-type 'windows-nt) ".exe" "")))
+                   (source-exe-path (expand-file-name target-name temp-dir))
+                   (final-exe-path (expand-file-name target-name install-dir)))
+
+              (message "Downloading...")
+              (url-copy-file zip-url temp-zip-file t)
+              (call-process "unzip" nil nil nil "-o" temp-zip-file "-d" temp-dir)
+              (rename-file source-exe-path final-exe-path t)
+              (set-file-modes final-exe-path #o755)
+              (message "Successfully installed emacs-lsp-booster to: %s" final-exe-path))
+          (delete-directory temp-dir t)))))
+
+  (let ((target-directory (locate-user-emacs-var-file "eglot-booster/bin")))
+    (add-to-list 'exec-path target-directory t)
+    (setenv "PATH" (mapconcat #'identity exec-path ":"))
+    (unless (executable-find "emacs-lsp-booster")
+      (sthenno/install-eglot-booster target-directory))))
 
 ;;; Python
 
@@ -118,6 +188,10 @@ interpreter."
             (message "Activated uv Python environment at %s" venv-path))
         (message "No uv Python environment found in %s" project-root))))
   (add-hook 'python-ts-mode-hook 'sthenno/python-venv)
+
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '((python-mode python-ts-mode) . ("basedpyright-langserver" "--stdio"))))
 
   :bind (:map python-ts-mode-map
               ("s-<up>" . python-nav-beginning-of-block)

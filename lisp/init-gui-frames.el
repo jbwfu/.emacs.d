@@ -160,8 +160,7 @@
     ;; (set-fontset-font t 'kana (font-spec :family "Noto Serif CJK JP"))
     (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji"))
     (set-fontset-font t 'ucs   (font-spec :family "SF Pro") nil 'prepend))
-  (remove-hook 'server-after-make-frame-hook #'sthenno/setup-fonts-and-faces)
-  )
+  (remove-hook 'server-after-make-frame-hook #'sthenno/setup-fonts-and-faces))
 
 ;; Set up fonts and faces for all frames.
 (if (display-graphic-p)
